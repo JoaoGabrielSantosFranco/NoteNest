@@ -1,6 +1,5 @@
 package com.NoteNest.NoteNest.controller;
 
-import com.NoteNest.NoteNest.configuration.JwtTokenService;
 import com.NoteNest.NoteNest.dto.NoteDto;
 import com.NoteNest.NoteNest.service.NoteService;
 import org.springframework.http.HttpStatus;
@@ -14,26 +13,30 @@ import java.util.List;
 public class NoteController {
 
     private final NoteService noteService;
-    private final JwtTokenService jwtTokenService;
 
-    public NoteController(NoteService noteService, JwtTokenService jwtTokenService) {
+    public NoteController(NoteService noteService) {
         this.noteService = noteService;
-        this.jwtTokenService = jwtTokenService;
     }
 
-
     @PostMapping
-    public ResponseEntity<Void> createNote(@RequestBody NoteDto noteDto, @RequestHeader("Authorization") String token) {
-
-        noteService.createNote(noteDto, token);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Object> createNote(@RequestBody NoteDto noteDto, @RequestHeader("Authorization") String token) {
+        try {
+            noteService.createNote(noteDto, token);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to create note.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<NoteDto>> getUserNotes(@RequestHeader("Authorization") String token) {
-        List<NoteDto> notes = noteService.getUserNotes(token);
-        return ResponseEntity.ok(notes);
+        try {
+            List<NoteDto> notes = noteService.getUserNotes(token);
+
+            return ResponseEntity.ok(notes);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
