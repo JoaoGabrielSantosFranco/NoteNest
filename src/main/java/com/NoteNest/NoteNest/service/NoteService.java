@@ -38,7 +38,7 @@ public class NoteService {
         User user = authService.getUserFromToken(token);
 
         return noteRepository.findByUserId(user.getId()).stream()
-                .map(note -> new NoteDto(note.getTitle(), note.getContent(),note.getCreateAt()))
+                .map(note -> new NoteDto(note.getId(), note.getTitle(), note.getContent(), note.getCreateAt()))
                 .toList();
     }
 }
