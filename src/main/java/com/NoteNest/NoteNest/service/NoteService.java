@@ -41,4 +41,21 @@ public class NoteService {
                 .map(note -> new NoteDto(note.getId(), note.getTitle(), note.getContent(), note.getCreateAt()))
                 .toList();
     }
+
+    public void updateNote(NoteDto dto, String token) {
+        User user = authService.getUserFromToken(token);
+
+        Note note = noteRepository.findById(dto.id())
+                .orElseThrow(() -> new IllegalArgumentException("Note not found: " + dto.id()));
+
+        if (!note.getUser().getId().equals(user.getId())) {
+            throw new SecurityException("You are not allowed to update this note.");
+        }
+
+        note.setTitle(dto.title());
+        note.setContent(dto.content());
+
+        noteRepository.save(note);
+    }
+
 }
