@@ -32,7 +32,6 @@ public class NoteController {
     public ResponseEntity<List<NoteDto>> getUserNotes(@RequestHeader("Authorization") String token) {
         try {
             List<NoteDto> notes = noteService.getUserNotes(token);
-
             return ResponseEntity.ok(notes);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -40,12 +39,22 @@ public class NoteController {
     }
 
     @PatchMapping
-    public ResponseEntity<Object> updateNote(@RequestBody NoteDto noteDto, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> updateNote(@RequestBody NoteDto noteDto, @RequestHeader("Authorization") String token) {
         try {
             noteService.updateNote(noteDto, token);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update note.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteNote(@RequestBody NoteDto noteDto, @RequestHeader("Authorization") String token) {
+        try {
+            noteService.deleteNote(noteDto, token);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to delete note.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

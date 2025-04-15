@@ -42,7 +42,22 @@ public class NoteService {
                 .toList();
     }
 
-    public void updateNote(NoteDto dto, String token) {
+    public void updateNote(NoteDto noteDto, String token) {
+        Note note = validateAndGetNote(noteDto, token);
+
+        note.setTitle(noteDto.title());
+        note.setContent(noteDto.content());
+
+        noteRepository.save(note);
+    }
+
+    public void deleteNote(NoteDto noteDto, String token) {
+        Note note = validateAndGetNote(noteDto, token);
+
+        noteRepository.deleteById(note.getId());
+    }
+
+    private Note validateAndGetNote(NoteDto dto, String token) {
         User user = authService.getUserFromToken(token);
 
         Note note = noteRepository.findById(dto.id())
@@ -51,11 +66,7 @@ public class NoteService {
         if (!note.getUser().getId().equals(user.getId())) {
             throw new SecurityException("You are not allowed to update this note.");
         }
-
-        note.setTitle(dto.title());
-        note.setContent(dto.content());
-
-        noteRepository.save(note);
+        return note;
     }
-
+    
 }
